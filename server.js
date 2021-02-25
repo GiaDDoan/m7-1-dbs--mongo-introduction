@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const { getUsers } = require("./exercises/exercise-1.3");
-// const { addUser } = require("./exercises/exercise-1.4");
+const { addUser } = require("./exercises/exercise-1.4");
 
 const PORT = process.env.PORT || 8000;
 
@@ -19,6 +19,7 @@ express()
   .get("/exercise-1/users", getUsers)
 
   // exercise 2
+  .post("/exercise-1/users", addUser)
 
   // handle 404s
   .use((req, res) => res.status(404).type("txt").send("🤷‍♂️"))
