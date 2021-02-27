@@ -43,7 +43,41 @@ const getGreeting = async (req, res) => {
   });
 };
 
+const getGreetingWithFind = async (req, res) => {
+  let start = 0;
+  let limit = 25;
+
+  if (req.query.start) {
+    start = parseInt(req.query.start);
+  }
+  if (req.query.limit) {
+    limit = parseInt(req.query.limit);
+  }
+
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+
+  const db = client.db("exercise_1");
+  const result = await db.collection("greetings").find().toArray();
+
+  if (start + limit > result.length) {
+    limit = result.length - start;
+  }
+
+  if (result) {
+    res.status(200).json({
+      status: 200,
+      start,
+      limit,
+      data: result.slice(start, start + limit),
+    });
+  } else {
+    res.status(404).json({ status: 404, data: "Not found" });
+  }
+};
+
 module.exports = {
   createGreeting,
   getGreeting,
+  getGreetingWithFind,
 };
