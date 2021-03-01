@@ -95,9 +95,25 @@ const deleteGreeting = async (req, res) => {
   }
 };
 
+const updateGreeting = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+  const db = client.db("exercise_1");
+  const _id = req.params._id;
+
+  const query = { _id };
+  const newValues = { $set: { ...req.body } };
+  const result = await db
+    .collection("greetings")
+    .updateOne({ query }, { newValues });
+
+  res.status(200).json({ status: 200, query, data: result });
+};
+
 module.exports = {
   createGreeting,
   getGreeting,
   getGreetingWithFind,
   deleteGreeting,
+  updateGreeting,
 };
