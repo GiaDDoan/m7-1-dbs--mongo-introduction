@@ -74,10 +74,30 @@ const getGreetingWithFind = async (req, res) => {
   } else {
     res.status(404).json({ status: 404, data: "Not found" });
   }
+  client.close();
+};
+
+const deleteGreeting = async (req, res) => {
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+
+    const db = client.db("exercise_1");
+    const _id = req.params._id;
+    console.log(_id, "id");
+
+    await db.collection("greetings").deleteOne({ _id });
+    const result = await db.collection("greetings").find().toArray();
+
+    res.status(204).json({ status: 204, data: result });
+  } catch (err) {
+    res.status(405).json({ status: 405, data: "Not found" });
+  }
 };
 
 module.exports = {
   createGreeting,
   getGreeting,
   getGreetingWithFind,
+  deleteGreeting,
 };

@@ -11,7 +11,7 @@ const options = {
 const getUsers = async (req, res) => {
   const client = await MongoClient(MONGO_URI, options);
   await client.connect();
-  const db = client.db(req.baseUrl);
+  const db = client.db("exercise_1");
 
   const data = await db.collection("users").find().toArray();
   const users = await data;
