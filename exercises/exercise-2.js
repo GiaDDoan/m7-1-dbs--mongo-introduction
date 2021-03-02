@@ -99,15 +99,26 @@ const updateGreeting = async (req, res) => {
   const client = await MongoClient(MONGO_URI, options);
   await client.connect();
   const db = client.db("exercise_1");
+  let newValues;
   const _id = req.params._id;
-
   const query = { _id };
-  const newValues = { $set: { ...req.body } };
-  const result = await db
-    .collection("greetings")
-    .updateOne({ query }, { newValues });
+  if (
+    Object.keys(req.body).length === 1 &&
+    Object.keys(req.body)[0].toLowerCase() === "hello"
+  ) {
+    newValues = { $set: { ...req.body } };
 
-  res.status(200).json({ status: 200, query, data: result });
+    const updatedGreeting = await db
+      .collection("greetings")
+      .updateOne(query, newValues);
+
+    // assert.strictEqual(1, updatedGreeting.matchedCount);
+    // assert.strictEqual(1, updatedGreeting.modifiedCount);
+
+    res.status(200).json({ status: 200, query, data: updatedGreeting });
+  } else {
+    res.status(404).json({ status: 404, data: `${req.body} not found` });
+  }
 };
 
 module.exports = {
