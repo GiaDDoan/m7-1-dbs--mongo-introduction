@@ -112,9 +112,18 @@ const updateGreeting = async (req, res) => {
       .collection("greetings")
       .updateOne(query, newValues);
 
-    // assert.strictEqual(1, updatedGreeting.matchedCount);
-    // assert.strictEqual(1, updatedGreeting.modifiedCount);
-
+    try {
+      assert.strictEqual(1, updatedGreeting.matchedCount, "Document not found");
+      assert.strictEqual(
+        1,
+        updatedGreeting.modifiedCount,
+        "Same modification value"
+      );
+    } catch (err) {
+      return res.status(409).json({ status: 409, message: err.message });
+    } finally {
+      client.close();
+    }
     res.status(200).json({ status: 200, query, data: updatedGreeting });
   } else {
     res.status(404).json({ status: 404, data: `${req.body} not found` });
