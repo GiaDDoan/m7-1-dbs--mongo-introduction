@@ -95,6 +95,16 @@ const deleteGreeting = async (req, res) => {
   }
 };
 
+// class NotFoundError Extends  error
+class ClientError extends Error {
+  constructor(name, status, message) {
+    super(message);
+    this.message = message;
+    this.status = status;
+    this.name = name;
+  }
+}
+
 const updateGreeting = async (req, res) => {
   const client = await MongoClient(MONGO_URI, options);
   await client.connect();
@@ -113,14 +123,20 @@ const updateGreeting = async (req, res) => {
       .updateOne(query, newValues);
 
     try {
-      assert.strictEqual(1, updatedGreeting.matchedCount, "Document not found");
+      assert.strictEqual(
+        1,
+        updatedGreeting.matchedCount,
+        new ClientError("DocumentNotFound", 404, "Document not found")
+      );
       assert.strictEqual(
         1,
         updatedGreeting.modifiedCount,
-        "Same modification value"
+        new ClientError("ModificationError", 409, "Same modification value")
       );
     } catch (err) {
-      return res.status(409).json({ status: 409, message: err.message });
+      return res
+        .status(err.status)
+        .json({ status: err.status, message: err.message });
     } finally {
       client.close();
     }
