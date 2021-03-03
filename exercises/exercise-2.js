@@ -44,15 +44,8 @@ const getGreeting = async (req, res) => {
 };
 
 const getGreetingWithFind = async (req, res) => {
-  let start = 0;
-  let limit = 25;
-
-  if (req.query.start) {
-    start = parseInt(req.query.start);
-  }
-  if (req.query.limit) {
-    limit = parseInt(req.query.limit);
-  }
+  const start = parseInt(req.query.start) || 0;
+  let limit = parseInt(req.query.limit) || 25;
 
   const client = await MongoClient(MONGO_URI, options);
   await client.connect();
